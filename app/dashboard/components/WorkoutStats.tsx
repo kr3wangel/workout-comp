@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 interface Workout {
   id: string
   pushups: number
+  pullups: number
   situps: number
   squats: number
   created_at: string
@@ -14,12 +15,15 @@ interface Workout {
 interface Stats {
   totalWorkouts: number
   latestPushups: number
+  latestPullups: number
   latestSitups: number
   latestSquats: number
   firstPushups: number
+  firstPullups: number
   firstSitups: number
   firstSquats: number
   pushupIncrease: string
+  pullupIncrease: string
   situpIncrease: string
   squatIncrease: string
 }
@@ -50,6 +54,9 @@ export default function WorkoutStats({ refresh }: { refresh: number }) {
         const pushupIncrease = first.pushups > 0
           ? (((latest.pushups - first.pushups) / first.pushups) * 100).toFixed(1)
           : '0'
+        const pullupIncrease = first.pullups > 0
+          ? (((latest.pullups - first.pullups) / first.pullups) * 100).toFixed(1)
+          : '0'
         const situpIncrease = first.situps > 0
           ? (((latest.situps - first.situps) / first.situps) * 100).toFixed(1)
           : '0'
@@ -60,12 +67,15 @@ export default function WorkoutStats({ refresh }: { refresh: number }) {
         setStats({
           totalWorkouts: workouts.length,
           latestPushups: latest.pushups,
+          latestPullups: latest.pullups,
           latestSitups: latest.situps,
           latestSquats: latest.squats,
           firstPushups: first.pushups,
+          firstPullups: first.pullups,
           firstSitups: first.situps,
           firstSquats: first.squats,
           pushupIncrease,
+          pullupIncrease,
           situpIncrease,
           squatIncrease,
         })
@@ -112,12 +122,20 @@ export default function WorkoutStats({ refresh }: { refresh: number }) {
           <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalWorkouts}</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Pushups</p>
             <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.latestPushups}</p>
             <p className={`text-xs mt-1 ${parseFloat(stats.pushupIncrease) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {parseFloat(stats.pushupIncrease) >= 0 ? '+' : ''}{stats.pushupIncrease}%
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Pullups</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.latestPullups}</p>
+            <p className={`text-xs mt-1 ${parseFloat(stats.pullupIncrease) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              {parseFloat(stats.pullupIncrease) >= 0 ? '+' : ''}{stats.pullupIncrease}%
             </p>
           </div>
 

@@ -9,6 +9,7 @@ interface WorkoutFormProps {
 
 export default function WorkoutForm({ onSuccess }: WorkoutFormProps) {
   const [pushups, setPushups] = useState('')
+  const [pullups, setPullups] = useState('')
   const [situps, setSitups] = useState('')
   const [squats, setSquats] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,6 +34,7 @@ export default function WorkoutForm({ onSuccess }: WorkoutFormProps) {
         .insert({
           user_id: user.id,
           pushups: parseInt(pushups),
+          pullups: parseInt(pullups),
           situps: parseInt(situps),
           squats: parseInt(squats),
         })
@@ -41,6 +43,7 @@ export default function WorkoutForm({ onSuccess }: WorkoutFormProps) {
         setError(insertError.message)
       } else {
         setPushups('')
+        setPullups('')
         setSitups('')
         setSquats('')
         onSuccess()
@@ -71,6 +74,22 @@ export default function WorkoutForm({ onSuccess }: WorkoutFormProps) {
             required
             value={pushups}
             onChange={(e) => setPushups(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="pullups" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Pullups
+          </label>
+          <input
+            id="pullups"
+            type="number"
+            min="0"
+            step="1"
+            required
+            value={pullups}
+            onChange={(e) => setPullups(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
           />
         </div>

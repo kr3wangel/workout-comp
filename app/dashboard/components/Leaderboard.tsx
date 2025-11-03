@@ -7,10 +7,13 @@ interface UserStats {
   user_id: string
   email: string
   pushupIncrease: number
+  pullupIncrease: number
   situpIncrease: number
   squatIncrease: number
   firstPushups: number
   latestPushups: number
+  firstPullups: number
+  latestPullups: number
   firstSitups: number
   latestSitups: number
   firstSquats: number
@@ -41,7 +44,7 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
       // Fetch all workouts
       const { data: workouts, error } = await supabase
         .from('workouts')
-        .select('user_id, pushups, situps, squats, created_at')
+        .select('user_id, pushups, pullups, situps, squats, created_at')
         .order('created_at', { ascending: true })
 
       if (error) throw error
@@ -75,6 +78,9 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
         const pushupIncrease = first.pushups > 0
           ? ((latest.pushups - first.pushups) / first.pushups) * 100
           : 0
+        const pullupIncrease = first.pullups > 0
+          ? ((latest.pullups - first.pullups) / first.pullups) * 100
+          : 0
         const situpIncrease = first.situps > 0
           ? ((latest.situps - first.situps) / first.situps) * 100
           : 0
@@ -86,10 +92,13 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
           user_id: userId,
           email: userEmail || 'Unknown',
           pushupIncrease,
+          pullupIncrease,
           situpIncrease,
           squatIncrease,
           firstPushups: first.pushups,
           latestPushups: latest.pushups,
+          firstPullups: first.pullups,
+          latestPullups: latest.pullups,
           firstSitups: first.situps,
           latestSitups: latest.situps,
           firstSquats: first.squats,
@@ -105,7 +114,7 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
     }
   }
 
-  const getRank = (userId: string, exerciseType: 'pushup' | 'situp' | 'squat') => {
+  const getRank = (userId: string, exerciseType: 'pushup' | 'pullup' | 'situp' | 'squat') => {
     const key = `${exerciseType}Increase` as keyof UserStats
     const sorted = [...stats].sort((a, b) => (b[key] as number) - (a[key] as number))
     return sorted.findIndex(s => s.user_id === userId) + 1
@@ -133,10 +142,12 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
   }
 
   const pushupLeaders = [...stats].sort((a, b) => b.pushupIncrease - a.pushupIncrease)
+  const pullupLeaders = [...stats].sort((a, b) => b.pullupIncrease - a.pullupIncrease)
   const situpLeaders = [...stats].sort((a, b) => b.situpIncrease - a.situpIncrease)
   const squatLeaders = [...stats].sort((a, b) => b.squatIncrease - a.squatIncrease)
 
   const currentUserPushupRank = currentUserId ? getRank(currentUserId, 'pushup') : null
+  const currentUserPullupRank = currentUserId ? getRank(currentUserId, 'pullup') : null
   const currentUserSitupRank = currentUserId ? getRank(currentUserId, 'situp') : null
   const currentUserSquatRank = currentUserId ? getRank(currentUserId, 'squat') : null
 
@@ -149,11 +160,17 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
       {currentUserId && (
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Rankings</p>
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-4 gap-4 text-center">
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400">Pushups</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {currentUserPushupRank ? `#${currentUserPushupRank}` : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Pullups</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {currentUserPullupRank ? `#${currentUserPullupRank}` : '-'}
               </p>
             </div>
             <div>
@@ -185,6 +202,23 @@ export default function Leaderboard({ refresh }: LeaderboardProps) {
               </span>
               <span className="text-green-600 dark:text-green-400 font-bold">
                 +{pushupLeaders[0]?.pushupIncrease.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Pullups Leaderboard */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            🏆 Pullups Leader
+          </h3>
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-900 dark:text-white">
+                {pullupLeaders[0]?.user_id === currentUserId ? 'You' : pullupLeaders[0]?.email}
+              </span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                +{pullupLeaders[0]?.pullupIncrease.toFixed(1)}%
               </span>
             </div>
           </div>
