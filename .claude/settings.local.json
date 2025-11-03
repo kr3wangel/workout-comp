@@ -7,7 +7,10 @@
       "Bash(npx tailwindcss init:*)",
       "Read(//Users/angel/Downloads/**)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
